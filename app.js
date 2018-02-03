@@ -1,9 +1,10 @@
 const net = require('net');
+const config = require('./config/config');
 
 var MongoClient = require('mongodb').MongoClient;
-var DB_CONN_STR = 'mongodb://localhost:27017/douyu';
+var DB_CONN_STR = config.dbUrl;
 
-let roomid = 156277;
+let roomid = config.roomId;
 
 //创建连接
 const s = net.connect({
