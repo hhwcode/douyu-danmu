@@ -79,11 +79,18 @@ function insertData(msg, c) {
     MongoClient.connect(DB_CONN_STR, function (err, db) {
         if (c == "danmu") {
             data = [{
+                //用户名
                 'name': msg['nn'],
+                //弹幕内容
                 'text': msg['txt'],
+                //用户等级
                 'level': msg['level'],
+                //发言房间号
                 'rid': msg['rid'],
-                'time': new Date()
+                //时间
+                'time': new Date(),
+                //弹幕颜色
+                'col': msg['col']
             }];
         }
         if (c == "user") {
