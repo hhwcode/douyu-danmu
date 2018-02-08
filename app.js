@@ -4,6 +4,7 @@ const config = require('./config/config');
 var MongoClient = require('mongodb').MongoClient;
 var DB_CONN_STR = config.dbUrl;
 
+//房间号
 let roomid = config.roomId;
 
 //创建连接
@@ -14,19 +15,22 @@ const s = net.connect({
     console.log('弹幕服务器连接成功……');
 });
 
+//发送进入房间消息
 var msg = 'type@=loginreq/roomid@=' + roomid + '/';
 sendData(s, msg);
+//发送请求分组消息
 msg = 'type@=joingroup/rid@=' + roomid + '/gid@=-9999/';
 sendData(s, msg);
 
+//接收数据
 s.on('data', (chunk) => {
     formatData(chunk);
 });
-
+//接收错误消息
 s.on('error', (err) => {
     console.log(err);
 });
-
+//发送心跳消息，保持连接
 setInterval(() => {
     // let timestamp = parseInt(new Date()/1000);
     let msg = 'type@=mrkl/';
@@ -46,6 +50,10 @@ function sendData(s, msg) {
     s.write(data);
 }
 
+/**
+ * 格式化接收的消息
+ * @param {*} msg 
+ */
 function formatData(msg) {
     const sliced = msg.slice(12).toString();
     // 减二删掉最后的'/'和'\0'
@@ -54,6 +62,11 @@ function formatData(msg) {
     analyseDanmu(map);
 }
 
+
+/**
+ * 将消息生成json
+ * @param {*} msg 
+ */
 function formatDanmu(msg) {
     let map = {};
     for (let i in msg) {
@@ -63,6 +76,10 @@ function formatDanmu(msg) {
     return map;
 }
 
+/**
+ * 处理消息
+ * @param {*} msg 
+ */
 function analyseDanmu(msg) {
     if (msg['type'] == 'chatmsg') {
         // insertData(msg, "danmu");
@@ -74,6 +91,9 @@ function analyseDanmu(msg) {
     }
 }
 
+/**
+ * 插入数据库方法
+ */
 function insertData(msg, c) {
     var data;
     MongoClient.connect(DB_CONN_STR, function (err, db) {
